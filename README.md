@@ -1,1 +1,1 @@
-# StayNexus.
+# StayNexus
