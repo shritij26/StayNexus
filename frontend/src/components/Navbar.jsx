@@ -26,6 +26,17 @@ function Navbar() {
 		}
 	}, [token]);
 
+	const userRole = useMemo(() => {
+		if (!token) return null;
+		try {
+			const decoded = JSON.parse(atob(token.split('.')[1] || ''));
+			if (!decoded || (decoded.exp && decoded.exp * 1000 <= Date.now())) return null;
+			return decoded.role || 'student';
+		} catch {
+			return null;
+		}
+	}, [token]);
+
 	const hasToken = Boolean(userName);
 
 	const [open, setOpen] = useState(false);
@@ -69,12 +80,22 @@ function Navbar() {
 					>
 						HostelCart
 					</Link>
-					<Link
-						to="/attendance"
-						className="px-3 py-1.5 rounded-lg border border-white/25 text-sm text-[#f6f4ef] hover:bg-white/10 transition-colors"
-					>
-						Attendance
-					</Link>
+					{userRole !== 'attendant' && (
+						<Link
+							to="/attendance"
+							className="px-3 py-1.5 rounded-lg border border-white/25 text-sm text-[#f6f4ef] hover:bg-white/10 transition-colors"
+						>
+							Attendance
+						</Link>
+					)}
+					{userRole === 'attendant' && (
+						<Link
+							to="/attendant/attendance"
+							className="px-3 py-1.5 rounded-lg border border-white/25 text-sm text-[#f6f4ef] hover:bg-white/10 transition-colors"
+						>
+							Student Attendance
+						</Link>
+					)}
 					<Link
 						to="/complaints"
 						className="px-3 py-1.5 rounded-lg border border-white/25 text-sm text-[#f6f4ef] hover:bg-white/10 transition-colors"

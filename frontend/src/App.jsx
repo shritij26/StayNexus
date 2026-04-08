@@ -8,6 +8,7 @@ import Profile from './pages/Profile.jsx';
 import Signup from './pages/Signup.jsx';
 import AttendantLogin from './pages/AttendantLogin.jsx';
 import AttendantSignup from './pages/AttendantSignup.jsx';
+import AttendantAttendance from './pages/AttendantAttendance.jsx';
 import Reports from './pages/Reports.jsx';
 import Complaints from './pages/Complaints.jsx';
 
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/attendant/login" element={<AttendantLogin />} />
         <Route path="/attendant/signup" element={<AttendantSignup />} />
+        <Route path="/attendant/attendance" element={<AttendantAttendance />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="*" element={<Navigate to="/" replace />} />

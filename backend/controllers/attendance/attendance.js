@@ -1,4 +1,5 @@
 import Attendance from '../../models/attendance/attendance.model.js';
+import User from '../../models/user.model.js';
 
 // Fixed hostel reference point (update these coordinates to your hostel gate/center).
 const HOSTEL_COORDS = {
@@ -127,4 +128,130 @@ const getMonthlyAttendance = async (req, res) => {
 	}
 };
 
-export { getMonthlyAttendance, markAttendance };
+const getAttendantMonthlyAttendance = async (req, res) => {
+	try {
+		if (req.user?.role !== 'attendant') {
+			return res.status(403).json({ message: 'Only attendants can access this attendance report' });
+		}
+
+		const month = Number(req.query.month);
+		const year = Number(req.query.year);
+
+		if (!Number.isInteger(month) || month < 1 || month > 12 || !Number.isInteger(year) || year < 1970) {
+			return res.status(400).json({ message: 'Invalid month/year query parameters' });
+		}
+
+		const hostelName = req.user?.hostelName;
+		if (!hostelName) {
+			return res.status(400).json({ message: 'Hostel information missing in token' });
+		}
+
+		const firstDay = new Date(year, month - 1, 1);
+		const lastDay = new Date(year, month, 0);
+		const startDate = formatDate(firstDay);
+		const endDate = formatDate(lastDay);
+		const daysInMonth = lastDay.getDate();
+
+		const students = await User.find({ hostelName })
+			.select('_id name email roomNumber hostelName')
+			.lean();
+
+		if (students.length === 0) {
+			return res.status(200).json({
+				hostelName,
+				month,
+				year,
+				totalStudents: 0,
+				overall: {
+					totalPresent: 0,
+					totalLeave: 0,
+					totalAbsent: 0,
+				},
+				students: [],
+			});
+		}
+
+		const studentIds = students.map((student) => student._id);
+		const records = await Attendance.find({
+			student: { $in: studentIds },
+			date: { $gte: startDate, $lte: endDate },
+		})
+			.select('student date status markedAt -_id')
+			.lean();
+
+		const recordsByStudent = new Map();
+		for (const record of records) {
+			const key = String(record.student);
+			if (!recordsByStudent.has(key)) {
+				recordsByStudent.set(key, []);
+			}
+			recordsByStudent.get(key).push(record);
+		}
+
+		let totalPresent = 0;
+		let totalLeave = 0;
+		let totalAbsent = 0;
+
+		const studentAttendance = students.map((student) => {
+			const studentKey = String(student._id);
+			const studentRecords = recordsByStudent.get(studentKey) || [];
+			const statusByDate = new Map(studentRecords.map((record) => [record.date, record.status]));
+
+			let presentDays = 0;
+			let leaveDays = 0;
+			let absentDays = 0;
+			const attendance = [];
+
+			for (let day = 1; day <= daysInMonth; day += 1) {
+				const date = formatDate(new Date(year, month - 1, day));
+				const status = statusByDate.get(date) || 'absent';
+
+				if (status === 'present') presentDays += 1;
+				else if (status === 'leave') leaveDays += 1;
+				else absentDays += 1;
+
+				attendance.push({ date, status });
+			}
+
+			totalPresent += presentDays;
+			totalLeave += leaveDays;
+			totalAbsent += absentDays;
+
+			const presentDates = attendance.filter((entry) => entry.status === 'present').map((entry) => entry.date);
+			const leaveDates = attendance.filter((entry) => entry.status === 'leave').map((entry) => entry.date);
+			const attendancePercentage = Number(((presentDays / daysInMonth) * 100).toFixed(2));
+
+			return {
+				studentId: student._id,
+				name: student.name,
+				email: student.email,
+				roomNumber: student.roomNumber,
+				hostelName: student.hostelName,
+				presentDays,
+				leaveDays,
+				absentDays,
+				attendancePercentage,
+				presentDates,
+				leaveDates,
+				attendance,
+			};
+		});
+
+		return res.status(200).json({
+			hostelName,
+			month,
+			year,
+			totalStudents: students.length,
+			overall: {
+				totalPresent,
+				totalLeave,
+				totalAbsent,
+			},
+			students: studentAttendance,
+		});
+	} catch (error) {
+		return res.status(500).json({ message: 'Failed to fetch attendant monthly attendance', error: error.message });
+	}
+};
+
+export { getAttendantMonthlyAttendance, getMonthlyAttendance, markAttendance };
