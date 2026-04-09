@@ -67,7 +67,7 @@ function Navbar() {
 					StayNexus
 				</Link>
 
-				<div className="flex items-center gap-3">
+				<div className="hidden md:flex items-center gap-3">
 					<Link
 						to="/reports"
 						className="px-3 py-1.5 rounded-lg border border-white/25 text-sm text-[#f6f4ef] hover:bg-white/10 transition-colors"
@@ -153,6 +153,54 @@ function Navbar() {
 						  )}
 						</div>
 					)}
+				</div>
+
+				{/* Mobile Menu */}
+				<div className="md:hidden relative" data-user-menu>
+				  <button
+				    type="button"
+				    onClick={() => setOpen((v) => !v)}
+				    className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-[#2563eb] text-white"
+				  >
+				    {userName || 'Menu'}
+				  </button>
+
+				  {open && (
+				    <div className="absolute right-0 mt-2 w-44 rounded-xl border border-gray-700/40 bg-[#020617]/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.4)] overflow-hidden">
+				      <Link to="/reports" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">Reports</Link>
+				      <Link to="/hostelcart" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">HostelCart</Link>
+				      {userRole !== 'attendant' && (
+				        <Link to="/attendance" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">Attendance</Link>
+				      )}
+				      {userRole === 'attendant' && (
+				        <Link to="/attendant/attendance" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">Student Attendance</Link>
+				      )}
+				      <Link to="/complaints" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">Complaints</Link>
+				      <Link to="/leave" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">Leave</Link>
+
+				      <div className="border-t border-gray-700/40" />
+
+				      {!hasToken ? (
+				        <>
+				          <Link to="/login" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">Login</Link>
+				          <Link to="/signup" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-blue-400 hover:bg-gray-800/40">Signup</Link>
+				        </>
+				      ) : (
+				        <>
+				          <Link to="/profile" onClick={() => setOpen(false)} className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40">Profile</Link>
+				          <button
+				            onClick={() => {
+				              setOpen(false);
+				              handleLogout();
+				            }}
+				            className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/40"
+				          >
+				            Logout
+				          </button>
+				        </>
+				      )}
+				    </div>
+				  )}
 				</div>
 			</div>
 		</header>

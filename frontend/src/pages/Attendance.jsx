@@ -62,25 +62,25 @@ function AttendancePage() {
 		<div className="min-h-screen bg-gradient-to-br from-[#0b1220] via-[#0f1b3d] to-[#0a0f1f] text-white">
 			<Navbar />
 
-			<div className="p-8 max-w-7xl mx-auto">
-				<div className="flex justify-between items-center mb-8">
-					<h1 className="text-3xl font-bold tracking-tight">Attendance</h1>
+			<div className="px-4 py-5 sm:p-8 max-w-7xl mx-auto">
+				<div className="flex flex-col sm:flex-row gap-5 sm:gap-4 sm:justify-between sm:items-center mb-8">
+					<h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Attendance</h1>
 
 					<button
 						onClick={handleMarkAttendance}
 						disabled={loading}
-						className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-blue-500/20 transition-all"
+						className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-blue-500/20 transition-all"
 					>
 						{loading ? 'Marking...' : 'Mark Attendance'}
 					</button>
 				</div>
 
-				<div className="flex gap-4 mb-8">
+				<div className="flex flex-col sm:flex-row gap-5 sm:gap-4 mb-8">
 					<input
 						type="number"
 						value={month}
 						onChange={(e) => setMonth(Number(e.target.value))}
-						className="bg-white/10 border border-white/20 backdrop-blur-md p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						className="bg-white/10 border border-white/20 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						min="1"
 						max="12"
 					/>
@@ -88,11 +88,11 @@ function AttendancePage() {
 						type="number"
 						value={year}
 						onChange={(e) => setYear(Number(e.target.value))}
-						className="bg-white/10 border border-white/20 backdrop-blur-md p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						className="bg-white/10 border border-white/20 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 					/>
 				</div>
 
-				<div className="grid grid-cols-7 gap-3">
+				<div className="grid grid-cols-4 sm:grid-cols-7 gap-2.5 sm:gap-3">
 					{[...Array(daysInMonth)].map((_, i) => {
 						const day = i + 1;
 						const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -103,7 +103,7 @@ function AttendancePage() {
 						if (status === 'present') bg = 'bg-green-500/70 border border-green-500 text-white';
 
 						return (
-							<div key={day} className={`${bg} p-4 rounded-xl text-center font-semibold backdrop-blur-md hover:scale-105 transition-all duration-200 cursor-pointer`}>
+							<div key={day} className={`${bg} px-2.5 py-3 sm:p-4 rounded-xl text-center font-semibold backdrop-blur-md hover:scale-105 transition-all duration-200 cursor-pointer`}>
 								{day}
 							</div>
 						);
