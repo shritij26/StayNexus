@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 import Navbar from '../components/Navbar';
+import { useLocation } from 'react-router-dom';
 
 
 function Signup() {
   const [hostelName, setHostelName] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
+  const location = useLocation();
+  const fromPath =
+    typeof location.state?.from === 'string' && location.state.from.startsWith('/')
+      ? location.state.from
+      : '/';
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-white">
@@ -46,7 +52,7 @@ function Signup() {
         </div>
 
         <div className="flex flex-col items-center gap-4">
-          <GoogleLoginButton mode="signup" signupData={{ hostelName, roomNumber }} />
+          <GoogleLoginButton mode="signup" signupData={{ hostelName, roomNumber }} redirectTo={fromPath} />
         </div>
       </div>
     </div>

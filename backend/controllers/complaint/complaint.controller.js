@@ -181,6 +181,10 @@ export const resolveComplaint = async (req, res) => {
 	try {
 		const { id } = req.body;
 
+		if (req.user?.role !== 'attendant') {
+			return res.status(403).json({ message: 'Only attendants can resolve complaints' });
+		}
+
 		if (!id) {
 			return res.status(400).json({ message: 'Complaint ID is required' });
 		}

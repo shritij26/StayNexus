@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { googleLogin } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
   
-function GoogleLoginButton({ mode = 'login', signupData = null, onSignupRequired = null }) {
+function GoogleLoginButton({ mode = 'login', signupData = null, onSignupRequired = null, redirectTo = '/' }) {
   const navigate = useNavigate();
   const containerId = `google-signin-${mode}`;
 
@@ -33,7 +33,8 @@ function GoogleLoginButton({ mode = 'login', signupData = null, onSignupRequired
         localStorage.setItem('token', data.token);
         // notify other components that auth state changed
         try { window.dispatchEvent(new Event('auth-changed')); } catch(e){}
-        navigate('/');
+        const target = typeof redirectTo === 'string' && redirectTo.startsWith('/') ? redirectTo : '/';
+        navigate(target, { replace: true });
       }
     } catch (err) {
       if (err?.code === 'SIGNUP_REQUIRED') {
