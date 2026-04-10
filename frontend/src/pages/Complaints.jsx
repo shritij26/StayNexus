@@ -192,7 +192,7 @@ function Complaints() {
 			: 'My Complaints';
 
 	return (
-		<div className="min-h-screen bg-[#0d1117] text-white">
+		<div className="min-h-screen bg-gradient-to-br from-[#0b1220] via-[#0f1b3d] to-[#0a0f1f] text-white">
 			<Navbar />
 			<main className="max-w-6xl mx-auto px-6 py-10">
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
