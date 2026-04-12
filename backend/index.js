@@ -9,6 +9,7 @@ import userRouter from './routes/user.route.js';
 import attendantRouter from './routes/attendant.route.js';
 import reportRouter from './routes/report.route.js';
 import complaintRouter from './routes/complaint.routes.js';
+import leaveRouter from './routes/leave.route.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -37,6 +38,7 @@ app.use('/api/v1/hostelcart', hostelCartRouter);
 app.use('/api/v1/attendant', attendantRouter);
 app.use('/api/v1/report', reportRouter);
 app.use('/api/v1/complaint', complaintRouter);
+app.use('/api/v1/leave', leaveRouter);
 
 app.get('/', (req, res) => {
 	res.json({ status: 'hello from staynexus' });

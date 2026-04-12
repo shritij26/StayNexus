@@ -11,6 +11,22 @@ import AttendantSignup from './pages/AttendantSignup.jsx';
 import AttendantAttendance from './pages/AttendantAttendance.jsx';
 import Reports from './pages/Reports.jsx';
 import Complaints from './pages/Complaints.jsx';
+import AttendantDashboard from './pages/AttendantDashboard.jsx';
+import getDecodedToken from './lib/auth.js';
+
+function AttendantOnlyRoute({ children }) {
+  const user = getDecodedToken();
+
+  if (!user) {
+    return <Navigate to="/attendant/login" replace />;
+  }
+
+  if (user.role !== 'attendant') {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
 
 export default function App() {
   return (
@@ -25,7 +41,22 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/attendant/login" element={<AttendantLogin />} />
         <Route path="/attendant/signup" element={<AttendantSignup />} />
-        <Route path="/attendant/attendance" element={<AttendantAttendance />} />
+        <Route
+          path="/attendant"
+          element={(
+            <AttendantOnlyRoute>
+              <AttendantDashboard />
+            </AttendantOnlyRoute>
+          )}
+        />
+        <Route
+          path="/attendant/attendance"
+          element={(
+            <AttendantOnlyRoute>
+              <AttendantAttendance />
+            </AttendantOnlyRoute>
+          )}
+        />
         <Route path="/reports" element={<Reports />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="*" element={<Navigate to="/" replace />} />

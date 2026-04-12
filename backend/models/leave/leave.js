@@ -1,9 +1,17 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const leaveSchema = new mongoose.Schema({
   studentId: {
     type: String,
     required: true, 
+  },
+  studentName: {
+    type: String,
+    trim: true,
+  },
+  hostelName: {
+    type: String,
+    trim: true,
   },
   startDate: {
     type: Date,
@@ -18,6 +26,11 @@ const leaveSchema = new mongoose.Schema({
     required: true, 
     trim: true, // Removes extra spaces
   },
+  type: {
+    type: String,
+    enum: ['Casual Leave', 'Sick Leave', 'Emergency Leave'],
+    default: 'Casual Leave',
+  },
   status: {
     type: String,
     enum: ['Pending', 'Approved', 'Denied'],
@@ -31,4 +44,4 @@ const leaveSchema = new mongoose.Schema({
 
 const Leave = mongoose.model('Leave', leaveSchema);
 
-module.exports = Leave;
+export default Leave;

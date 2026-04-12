@@ -3,6 +3,16 @@ import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import { attendantLogin } from '../api/auth';
 
+const decodeRoleFromToken = (token) => {
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1] || ''));
+    return payload?.role || null;
+  } catch {
+    return null;
+  }
+};
+
 function AttendantLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,11 +21,22 @@ function AttendantLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
       const data = await attendantLogin({ email, password });
+      const role = decodeRoleFromToken(data.token);
+      if (role !== 'attendant') {
+        setError('This account is not authorized as an attendant.');
+        return;
+      }
+
       localStorage.setItem('token', data.token);
-      navigate('/reports');
-      window.location.reload(); // Refresh to update navbar
+      try {
+        window.dispatchEvent(new Event('auth-changed'));
+      } catch {
+        // no-op
+      }
+      navigate('/attendant', { replace: true });
     } catch (err) {
       setError(err.message);
     }

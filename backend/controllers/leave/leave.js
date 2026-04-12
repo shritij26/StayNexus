@@ -1,54 +1,76 @@
-const Leave = require('../models/Leave'); 
+import Leave from '../../models/leave/leave.js';
 
-exports.createLeave = async (req, res) => {
-  const { studentId, startDate, endDate, reason } = req.body;
+export const createLeave = async (req, res) => {
+  const { startDate, endDate, reason, type } = req.body;
 
-  if (!studentId || !startDate || !endDate || !reason) {
-    return res.status(400).json({ error: 'All fields are required.' });
+  if (!startDate || !endDate || !reason) {
+    return res.status(400).json({ msg: 'All fields are required' });
   }
+
   if (new Date(startDate) > new Date(endDate)) {
-    return res.status(400).json({ error: 'startDate must be before endDate.' });
+    return res.status(400).json({ msg: 'startDate must be before endDate' });
   }
 
   try {
-    const leave = new Leave({ studentId, startDate, endDate, reason });
-    await leave.save();
-    res.status(201).json({ message: 'Leave request submitted successfully.' });
+    const leave = await Leave.create({
+      studentId: req.user.userId,
+      studentName: req.user.name,
+      hostelName: req.user.hostelName,
+      startDate,
+      endDate,
+      reason,
+      type: type || 'Casual Leave',
+    });
+
+    return res.status(201).json({ msg: 'Leave request submitted successfully', leave });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to submit leave request.' });
+    return res.status(500).json({ msg: 'Failed to submit leave request', error: error.message });
   }
 };
 
-exports.getLeavesByStudent = async (req, res) => {
-  const { studentId } = req.params;
-
+export const getLeaves = async (req, res) => {
   try {
-    const leaves = await Leave.find({ studentId });
-    res.status(200).json(leaves);
+    const query = req.user.role === 'attendant'
+      ? { hostelName: req.user.hostelName }
+      : { studentId: req.user.userId };
+    const leaves = await Leave.find(query).sort({ createdAt: -1 });
+    return res.status(200).json({ leaves });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch leave requests.' });
+    return res.status(500).json({ msg: 'Failed to fetch leave requests', error: error.message });
   }
 };
 
-exports.updateLeaveStatus = async (req, res) => {
+export const updateLeaveStatus = async (req, res) => {
   const { leaveId } = req.params;
   const { status } = req.body;
 
-  if (!['Pending', 'Approved', 'Denied'].includes(status)) {
-    return res.status(400).json({ error: 'Invalid status value.' });
+  if (req.user?.role !== 'attendant') {
+    return res.status(403).json({ msg: 'Only attendants can approve or deny leave requests' });
+  }
+
+  if (!['Approved', 'Denied'].includes(status)) {
+    return res.status(400).json({ msg: 'Invalid status value' });
   }
 
   try {
+    const existingLeave = await Leave.findById(leaveId);
+
+    if (!existingLeave) {
+      return res.status(404).json({ msg: 'Leave request not found' });
+    }
+
+    if (existingLeave.hostelName && existingLeave.hostelName !== req.user.hostelName) {
+      return res.status(403).json({ msg: 'You are not authorized to approve this leave request' });
+    }
+
     const leave = await Leave.findByIdAndUpdate(
       leaveId,
       { status },
       { new: true }
     );
-    if (!leave) {
-      return res.status(404).json({ error: 'Leave request not found.' });
-    }
-    res.status(200).json({ message: 'Leave status updated successfully.', leave });
+
+    return res.status(200).json({ msg: 'Leave status updated successfully', leave });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update leave status.' });
+    return res.status(500).json({ msg: 'Failed to update leave status', error: error.message });
   }
 };
