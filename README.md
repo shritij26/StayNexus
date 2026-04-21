@@ -65,15 +65,6 @@ npm run dev
 
 ---
 
-## 📌 Future Improvements
-
-- 🔐 Authentication System  
-- 📊 Admin Dashboard  
-- 📩 Notifications  
-- 🗄️ Database Integration  
-
----
-
 ## 🤝 Contributing
 
 1. Fork the repository  
