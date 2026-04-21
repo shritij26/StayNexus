@@ -40,6 +40,25 @@
 🔗 https://stay-nexus.vercel.app/
 
 ---
+
+## 📂 Project Structure
+
+```
+StayNexus/
+│
+├── public/
+│
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── assets/
+│   ├── styles/
+│   └── App.jsx
+│
+├── package.json
+└── README.md
+```
+
 ---
 
 ## ⚙️ Installation & Setup
@@ -47,3 +66,60 @@
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/your-username/StayNexus.git
+```
+
+### 2. Navigate to the Project Folder
+```bash
+cd StayNexus
+```
+
+### 3. Install Dependencies
+```bash
+npm install
+```
+
+### 4. Run the Development Server
+```bash
+npm run dev
+```
+
+---
+
+## 📌 Future Improvements
+
+- 🔐 Authentication System  
+- 📊 Admin Dashboard  
+- 📩 Notifications  
+- 🗄️ Database Integration  
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository  
+2. Create your feature branch  
+```bash
+git checkout -b feature/YourFeature
+```
+3. Commit your changes  
+```bash
+git commit -m "Add your feature"
+```
+4. Push to the branch  
+```bash
+git push origin feature/YourFeature
+```
+5. Open a Pull Request  
+
+
+---
+
+## 👨‍💻 Author
+
+**Shritij Raman**
+
+---
+
+## ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub!
