@@ -41,26 +41,6 @@
 
 ---
 
-## 📂 Project Structure
-
-```
-StayNexus/
-│
-├── public/
-│
-├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── assets/
-│   ├── styles/
-│   └── App.jsx
-│
-├── package.json
-└── README.md
-```
-
----
-
 ## ⚙️ Installation & Setup
 
 ### 1. Clone the Repository
